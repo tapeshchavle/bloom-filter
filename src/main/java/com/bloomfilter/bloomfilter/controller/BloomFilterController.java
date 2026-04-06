@@ -28,13 +28,6 @@ public class BloomFilterController {
         this.bloomFilterService = bloomFilterService;
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    //  Filter Management
-    // ═══════════════════════════════════════════════════════════════
-
-    /**
-     * Creates a new Bloom Filter at runtime.
-     */
     @PostMapping("/filters")
     public ResponseEntity<Map<String, Object>> createFilter(@Valid @RequestBody CreateFilterRequest request) {
         bloomFilterService.createFilter(
