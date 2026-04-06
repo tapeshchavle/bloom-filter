@@ -1,0 +1,73 @@
+# ═══════════════════════════════════════════════════════════
+#  Bloom Filter Service — Application Configuration
+# ═══════════════════════════════════════════════════════════
+
+spring:
+  application:
+    name: bloom-filter-service
+
+server:
+  port: 8080
+
+# ─────────────────────────────────────────────────────────
+#  Bloom Filter Configuration
+#  Each filter is tuned for its specific Instagram use case
+# ─────────────────────────────────────────────────────────
+bloom:
+  filters:
+    # USERNAME REGISTRY
+    # Checks if a username has been registered.
+    # 10M expected usernames with 0.1% false positive rate.
+    # Memory: ~17.96 MB
+    username-registry:
+      expected-insertions: 10000000
+      false-positive-probability: 0.001
+
+    # DUPLICATE POST DETECTOR
+    # Checks if a media hash has already been uploaded.
+    # 50M expected uploads with 1% false positive rate.
+    # Memory: ~57.28 MB
+    duplicate-post-detector:
+      expected-insertions: 50000000
+      false-positive-probability: 0.01
+
+    # NOTIFICATION DEDUP
+    # Prevents sending duplicate notifications.
+    # 5M expected notification events with 1% FPP.
+    # Memory: ~5.73 MB
+    # Should be reset daily (ephemeral state).
+    notification-dedup:
+      expected-insertions: 5000000
+      false-positive-probability: 0.01
+
+    # FEED DEDUP
+    # Prevents showing the same post twice in a user's feed.
+    # 100M expected user:post pairs with 1% FPP.
+    # Memory: ~114.56 MB
+    feed-dedup:
+      expected-insertions: 100000000
+      false-positive-probability: 0.01
+
+# ─────────────────────────────────────────────────────────
+#  Actuator & Metrics
+# ─────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: bloom-filter-service
+
+# ─────────────────────────────────────────────────────────
+#  Logging
+# ─────────────────────────────────────────────────────────
+logging:
+  level:
+    com.bloomfilter: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
